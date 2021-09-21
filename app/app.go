@@ -9,6 +9,7 @@ import (
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
 	"jesus.tn79/aveonline/config"
+	"jesus.tn79/aveonline/controllers"
 )
 
 var router *gin.Engine
@@ -30,7 +31,6 @@ func RouterInitial() *gin.Engine {
 	}
 
 	db, err := config.GetConnectionPostgres(&dbSQL)
-	fmt.Println(db)
 	if err != nil {
 		fmt.Println("Error en la conexion con la bd..")
 		log.Fatal(err)
@@ -52,13 +52,12 @@ func RouterInitial() *gin.Engine {
 		AllowCredentials: true,
 		MaxAge:           12 * time.Hour,
 	}))
-	// controller := controllers.NewController(db, rds)
+	controller := controllers.NewController(db)
 
-	// v1 := router.Group("/api/v1")
-	// {
-	// 	v1.GET("/oficina/", controller.GetOficinaController)
-	// 	v1.GET("/oficina/comunicados/", controller.GetOficinaComunicadoController)
-	// 	v1.GET("/servicio/notificar/", controller.GetTokenUserController)
-	// }
+	router.GET("/medicamento", controller.GetMedicamentoController)
+	router.POST("/medicamento", controller.CreateMedicamentoController)
+	router.GET("/promocion", controller.GetPromocionController)
+	router.POST("/promocion", controller.CreatePromocionController)
+	router.GET("/factura", controller.GetFacturaController)
 	return router
 }

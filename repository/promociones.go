@@ -1,6 +1,10 @@
 package repository
 
-import "jesus.tn79/aveonline/model"
+import (
+	"fmt"
+
+	"jesus.tn79/aveonline/model"
+)
 
 func (repo Repository) GetPromociones() ([]*model.Promocion, error) {
 	var promociones []*model.Promocion
@@ -11,7 +15,7 @@ func (repo Repository) GetPromociones() ([]*model.Promocion, error) {
 	defer rows.Close()
 	for rows.Next() {
 		promocion := &model.Promocion{}
-		_ = rows.Scan(&promocion.ID, &promocion.Descripcion, &promocion.Porcentaje, &promocion.Fecha_Fin, &promocion.Fecha_Fin)
+		_ = rows.Scan(&promocion.ID, &promocion.Descripcion, &promocion.Porcentaje, &promocion.Fecha_Inicio, &promocion.Fecha_Fin)
 		promociones = append(promociones, promocion)
 	}
 	return promociones, err
@@ -31,10 +35,11 @@ func (repo Repository) GetPromocion(promocion_id int) (*model.Promocion, error) 
 }
 
 func (repo Repository) CreatePromocion(data model.Promocion) (*string, error) {
-	_, err := repo.db.Raw("INSERT INTO promocion(descripcion,porcentaje,fecha_inicio,fecha_fin)VALUES(?,?,?,?)", data.Descripcion, data.Porcentaje, data.Fecha_Inicio, data.Fecha_Fin).Rows()
-	if err != nil {
-		return nil, err
+	tx := repo.db.Exec("INSERT INTO promocion(descripcion,porcentaje,fecha_inicio,fecha_fin)VALUES(?,?,?,?)", data.Descripcion, data.Porcentaje, data.Fecha_Inicio, data.Fecha_Fin)
+	if tx.Error != nil {
+		fmt.Println(tx.Error)
+		return nil, tx.Error
 	}
-	message := "medicamento creado."
+	message := "promoción creado."
 	return &message, nil
 }

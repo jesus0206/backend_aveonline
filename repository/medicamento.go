@@ -1,6 +1,8 @@
 package repository
 
-import "jesus.tn79/aveonline/model"
+import (
+	"jesus.tn79/aveonline/model"
+)
 
 func (repo Repository) GetMedicamentos() ([]*model.Medicamento, error) {
 	var medicamentos []*model.Medicamento
@@ -37,9 +39,9 @@ func (repo Repository) GetFacturaMedicamentos(factura_id int) ([]*model.Medicame
 }
 
 func (repo Repository) CreateMedicamento(data model.Medicamento) (*string, error) {
-	_, err := repo.db.Raw("INSERT INTO medicamento(nombre,precio,ubicacion)VALUES(?,?,?)", data.Nombre, data.Precio, data.Ubicacion).Rows()
-	if err != nil {
-		return nil, err
+	sql := repo.db.Exec("INSERT INTO medicamento(nombre,precio,ubicacion)VALUES(?,?,?)", data.Nombre, data.Precio, data.Ubicacion)
+	if sql.Error != nil {
+		return nil, sql.Error
 	}
 	message := "medicamento creado."
 	return &message, nil

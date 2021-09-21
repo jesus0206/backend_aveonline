@@ -1,12 +1,14 @@
 package repository
 
 import (
+	"fmt"
+
 	"jesus.tn79/aveonline/model"
 )
 
-func (repo Repository) GetFacturas() ([]*model.Factura, error) {
+func (repo Repository) GetFacturas(query model.FacturaDto) ([]*model.Factura, error) {
 	var facturas []*model.Factura
-	rows, err := repo.db.Raw("SELECT id,fecha_crear,pago_total,promocion_id FROM factura").Rows()
+	rows, err := repo.db.Raw("SELECT id,fecha_crear,pago_total,promocion_id FROM factura WHERE (fecha_crear BETWEEN  ? AND ?)", query.Fecha_Inicio, query.Fecha_Fin).Rows()
 	defer rows.Close()
 	if err != nil {
 		return nil, err
@@ -33,8 +35,9 @@ func (repo Repository) GetFacturas() ([]*model.Factura, error) {
 }
 
 func (repo Repository) CreateFactura(data model.FacturaCreateDto) (*string, error) {
-	_ = repo.db.Exec(`INSERT INTO factura(fecha_crear,pago_total,promocion_id)VALUES(?,?,?)`, data.Fecha_Crear, data.Pago_Total, data.PromocionID)
-
+	var factura_id int
+	_ = repo.db.Exec(`INSERT INTO factura(fecha_crear,pago_total,promocion_id)VALUES(?,?,?)RETURNING id`, data.Fecha_Crear, data.Pago_Total, data.PromocionID).Scan(&factura_id)
+	fmt.Println(factura_id)
 	for _, id := range data.MedicamentosID {
 		err := repo.CreateFacturaItem(5, id)
 		if err != nil {
