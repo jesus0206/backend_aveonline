@@ -59,5 +59,7 @@ func RouterInitial() *gin.Engine {
 	router.GET("/promocion", controller.GetPromocionController)
 	router.POST("/promocion", controller.CreatePromocionController)
 	router.GET("/factura", controller.GetFacturaController)
+	router.POST("/factura", controller.CreateFacturaController)
+	router.GET("/factura/simular", controller.SimularFacturaController)
 	return router
 }

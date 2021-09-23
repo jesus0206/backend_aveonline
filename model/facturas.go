@@ -24,9 +24,9 @@ type FacturaDto struct {
 
 // FacturaCreateDto exported
 type FacturaCreateDto struct {
-	ID             int    `json:"id"`
-	Fecha_Crear    string `json:"fecha_crear"`
-	Pago_Total     string `json:"pago_total"`
-	PromocionID    int    `json:"id_promocion"`
-	MedicamentosID []int  `json:"id_medicamentos"`
+	ID             int     `json:"id"`
+	Fecha_Crear    string  `json:"fecha_crear"`
+	Pago_Total     float32 `json:"pago_total"`
+	PromocionID    int     `json:"id_promocion"`
+	MedicamentosID []int   `json:"id_medicamentos"`
 }

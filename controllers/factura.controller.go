@@ -1,6 +1,7 @@
 package controllers
 
 import (
+	"fmt"
 	"net/http"
 	"time"
 
@@ -47,16 +48,37 @@ func (con Controller) GetFacturaController(c *gin.Context) {
 	c.JSON(http.StatusOK, data)
 }
 
-// func (con Controller) CreatePromocionController(c *gin.Context) {
-// 	var json model.Promocion
-// 	if err := c.ShouldBindJSON(&json); err != nil {
-// 		c.JSON(http.StatusBadRequest, model.ResponseError{Error: "Debe enviar los datos como json.."})
-// 		return
-// 	}
-// 	data, errr := con.repo.CreatePromocion(json)
-// 	if errr != nil {
-// 		c.JSON(http.StatusInternalServerError, model.ResponseError{Error: errr.Error()})
-// 		return
-// 	}
-// 	c.JSON(http.StatusOK, data)
-// }
+func (con Controller) CreateFacturaController(c *gin.Context) {
+	var json model.FacturaCreateDto
+	if err := c.ShouldBindJSON(&json); err != nil {
+		fmt.Println(err.Error())
+		c.JSON(http.StatusBadRequest, model.ResponseError{Error: "Debe enviar los datos como json.."})
+		return
+	}
+	data, errr := con.repo.CreateFactura(json)
+	if errr != nil {
+		c.JSON(http.StatusInternalServerError, model.ResponseError{Error: errr.Error()})
+		return
+	}
+	c.JSON(http.StatusOK, data)
+}
+
+func (con Controller) SimularFacturaController(c *gin.Context) {
+	fecha_compra := c.Query("fecha_compra")
+	if fecha_compra == "" {
+		c.JSON(http.StatusBadRequest, model.ResponseError{Error: "no esta enviando la fecha de compra."})
+		return
+	}
+	medicamento_id := c.DefaultQuery("id_medicamentos", "")
+	if medicamento_id == "" {
+		c.JSON(http.StatusBadRequest, model.ResponseError{Error: "no esta enviando los id medicamentos."})
+		return
+	}
+
+	data, errr := con.repo.SimularFactura(fecha_compra, medicamento_id)
+	if errr != nil {
+		c.JSON(http.StatusInternalServerError, model.ResponseError{Error: errr.Error()})
+		return
+	}
+	c.JSON(http.StatusOK, data)
+}
